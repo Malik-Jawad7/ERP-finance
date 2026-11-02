@@ -10,8 +10,8 @@
     </a>
 </div>
 
-<!-- KPI Cards -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+<!-- KPI Cards (6 Cards) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
 @foreach($kpis as $k)
 <div class="gsap-fade-up bg-white rounded-2xl shadow-card p-6 border border-slate-100 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300">
     <div class="absolute right-0 top-0 w-24 h-24 bg-{{ $k['color'] }}-50 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
@@ -40,7 +40,7 @@
         <div class="space-y-5">
         @forelse($topClients as $c)
             <div>
-                <div class="flex justify-between text-sm font-semibold mb-1"><span class="text-slate-700">{{ $c->name }}</span><span class="text-slate-900">${{ number_format($c->paid_total ?? 0) }}</span></div>
+                <div class="flex justify-between text-sm font-semibold mb-1"><span class="text-slate-700">{{ $c->name }}</span><span class="text-slate-900">{{ currency_symbol() }}{{ number_format($c->paid_total ?? 0) }}</span></div>
                 <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-brand-500 rounded-full" style="width:{{ (($c->paid_total??0)/max($topClients->max('paid_total'),1))*100 }}%"></div></div>
             </div>
         @empty
@@ -50,8 +50,8 @@
     </div>
 </div>
 
-<!-- Recent Activity -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<!-- Recent Activity (3 columns) -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <!-- Recent Invoices -->
     <div class="gsap-fade-up bg-white rounded-2xl shadow-card border border-slate-100 p-6">
         <div class="flex justify-between items-center mb-4">
@@ -66,12 +66,36 @@
                         <p class="text-xs text-slate-500">{{ $inv->client->name ?? 'Unknown' }}</p>
                     </div>
                     <div class="text-right">
-                        <p class="font-bold text-slate-800 text-sm">${{ number_format($inv->total, 2) }}</p>
+                        <p class="font-bold text-slate-800 text-sm">{{ currency_symbol() }}{{ number_format($inv->total, 2) }}</p>
                         <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ $inv->status == 'paid' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600' }}">{{ ucfirst($inv->status) }}</span>
                     </div>
                 </div>
             @empty
                 <p class="text-sm text-slate-500 text-center py-4">No recent invoices.</p>
+            @endforelse
+        </div>
+    </div>
+
+    <!-- Recent Payments -->
+    <div class="gsap-fade-up bg-white rounded-2xl shadow-card border border-slate-100 p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-bold text-slate-900">Recent Payments</h2>
+            <a href="{{ route('payments.index') }}" class="text-xs font-bold text-brand-600 hover:underline">View All</a>
+        </div>
+        <div class="divide-y divide-slate-100">
+            @forelse($recentPayments as $p)
+                <div class="py-3 flex justify-between items-center">
+                    <div>
+                        <p class="font-bold text-slate-800 text-sm">{{ $p->receipt_no }}</p>
+                        <p class="text-xs text-slate-500">{{ $p->invoice->client->name ?? 'Unknown' }}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-emerald-600 text-sm">{{ currency_symbol() }}{{ number_format($p->amount, 2) }}</p>
+                        <p class="text-[10px] text-slate-500">{{ $p->paid_at->format('M d') }}</p>
+                    </div>
+                </div>
+            @empty
+                <p class="text-sm text-slate-500 text-center py-4">No recent payments.</p>
             @endforelse
         </div>
     </div>
@@ -91,7 +115,7 @@
                     </div>
                     <div class="text-right">
                         <p class="font-bold text-sm {{ $tx->type == 'income' ? 'text-emerald-600' : 'text-rose-600' }}">
-                            {{ $tx->type == 'income' ? '+' : '-' }}${{ number_format($tx->amount, 2) }}
+                            {{ $tx->type == 'income' ? '+' : '-' }}{{ currency_symbol() }}{{ number_format($tx->amount, 2) }}
                         </p>
                     </div>
                 </div>

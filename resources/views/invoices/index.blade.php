@@ -28,7 +28,7 @@
                         'paid'    => 'bg-emerald-50 text-emerald-600',
                         'sent'    => 'bg-sky-50 text-sky-600',
                         'draft'   => 'bg-slate-100 text-slate-600',
-                        'overdue' => 'bg-rose-50 text-rose-600',
+                        'overdue' => 'bg-rose-50 text-rose-600', 'partial' => 'bg-purple-50 text-purple-600',
                         'cancelled' => 'bg-slate-100 text-slate-500',
                     ];
                 @endphp
@@ -43,7 +43,10 @@
                         </span>
                     </td>
                     <td class="px-6 py-4 text-right space-x-2">
-                        <a href="{{ route('invoices.edit', $inv) }}" class="text-blue-600 font-medium hover:underline">Edit</a>
+                        @if(in_array($inv->status, ['sent', 'overdue', 'partial']))
+                        <a href="{{ route('invoices.pay', $inv) }}" class="text-emerald-600 font-medium hover:underline">Record Payment</a>
+                    @endif
+                    <a href="{{ route('invoices.edit', $inv) }}" class="text-blue-600 font-medium hover:underline">Edit</a>
                         <form action="{{ route('invoices.destroy', $inv) }}" method="POST" class="inline" onsubmit="return confirm('Delete?')">@csrf @method('DELETE')<button class="text-rose-600 font-medium hover:underline">Delete</button></form>
                     </td>
                 </tr>

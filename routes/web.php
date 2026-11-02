@@ -34,4 +34,7 @@ Route::post("/settings", [SettingController::class, "update"])->name("settings.u
 Route::post("/notifications/read", [App\Http\Controllers\NotificationController::class, "markAsRead"])->name("notifications.read");
 Route::post("/notifications/clear", [App\Http\Controllers\NotificationController::class, "clearAll"])->name("notifications.clear");
 
+Route::resource("payments", \App\Http\Controllers\PaymentController::class)->except(["edit", "update"]);
+Route::get("invoices/{invoice}/pay", [\App\Http\Controllers\PaymentController::class, "create"])->name("invoices.pay");
+
 require __DIR__."/auth.php";
